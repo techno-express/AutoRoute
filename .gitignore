@@ -2,3 +2,6 @@
 /vendor/
 /tmp/
 /.phpunit.result.cache
+/build/
+*.lock
+*.cache
