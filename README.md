@@ -1,5 +1,7 @@
 # AutoRoute
 
+[![Build Status](https://travis-ci.org/techno-express/AutoRoute.svg?branch=master)](https://travis-ci.org/techno-express/AutoRoute)[![Build status](https://ci.appveyor.com/api/projects/status/8wx0sdafv2v2ucyk/branch/master?svg=true)](https://ci.appveyor.com/project/techno-express/autoroute/branch/master)[![codecov](https://codecov.io/gh/techno-express/AutoRoute/branch/master/graph/badge.svg)](https://codecov.io/gh/techno-express/AutoRoute)
+
 AutoRoute automatically maps incoming HTTP requests (by verb and path) to PHP
 action classes in a specified namespace, reflecting on a specified action method
 within that class to determine the dynamic URL parameters. In addition, it lets
