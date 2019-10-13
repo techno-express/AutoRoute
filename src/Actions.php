@@ -193,7 +193,7 @@ class Actions
         $last = array_pop($parts);
         $core = implode('', $parts);
         $verb = substr($last, 0, strlen($last) - strlen($core) - $this->suffixLen);
-        if ($verb === '') {
+        if (($verb === '') || ($verb === false)) {
             return null;
         }
 
