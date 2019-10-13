@@ -33,7 +33,10 @@ class Dumper
     {
         $dirlen = strlen($this->actions->getDirectory());
         $dir = escapeshellarg($this->actions->getDirectory());
-        $command = "find $dir -name '*.php'";
+        // Use `dir` if running Windows OS like system
+        $command = ('\\' !== \DIRECTORY_SEPARATOR)
+            ? "find $dir -name '*.php'"
+            : "dir $dir".DIRECTORY_SEPARATOR."*.php /b /s";
         exec($command, $files, $exit);
         return $files;
     }
