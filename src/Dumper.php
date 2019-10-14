@@ -31,13 +31,16 @@ class Dumper
 
     protected function getFiles() : array
     {
-        $dirlen = strlen($this->actions->getDirectory());
-        $dir = escapeshellarg($this->actions->getDirectory());
-        // Use `dir` if running Windows OS like system
-        $command = ('\\' !== \DIRECTORY_SEPARATOR)
-            ? "find $dir -name '*.php'"
-            : "dir $dir".DIRECTORY_SEPARATOR."*.php /b /s";
-        exec($command, $files, $exit);
+        return $this->glob_recursive($this->actions->getDirectory().\DIRECTORY_SEPARATOR. '*.php');
+    }
+
+    protected function glob_recursive($pattern, $flags = 0)
+    {
+        $files = \glob($pattern, $flags);
+        foreach (\glob(\dirname($pattern).\DIRECTORY_SEPARATOR.'*', \GLOB_ONLYDIR | \GLOB_NOSORT) as $dir) {
+            $files = \array_merge($files, $this->glob_recursive($dir .\DIRECTORY_SEPARATOR. \basename($pattern), $flags));
+        }
+
         return $files;
     }
 
