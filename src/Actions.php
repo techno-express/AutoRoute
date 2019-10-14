@@ -188,6 +188,13 @@ class Actions
     public function fileToClass(string $file) : ?string
     {
         $file = str_replace($this->directory . DIRECTORY_SEPARATOR, '', substr($file, 0, -4));
+
+        // Check for Windows OS like system, remove forward invalid '/', replace with '\'
+        if (('\\' === \DIRECTORY_SEPARATOR) && \strpos($file, ':\\') !== false) {
+            $this->directory = \str_replace('/', '\\', $this->directory);
+            $file = \str_replace($this->directory . \DIRECTORY_SEPARATOR, '', $file);
+        }
+
         $parts = explode(DIRECTORY_SEPARATOR, $file);
 
         $last = array_pop($parts);
