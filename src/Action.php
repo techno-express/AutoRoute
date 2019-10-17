@@ -53,27 +53,27 @@ class Action
         int $ignoreParams,
         string $baseUrl
     ) {
-        $this->namespace = trim($namespace, '\\') . '\\';
-        $this->namespaceLen = strlen($this->namespace);
+        $this->namespace = \trim($namespace, '\\') . '\\';
+        $this->namespaceLen = \strlen($this->namespace);
         $this->class = $class;
         $this->suffix = $suffix;
-        $this->suffixLen = strlen($suffix);
+        $this->suffixLen = \strlen($suffix);
         $this->method = $method;
-        $this->baseUrl = '/' . trim($baseUrl, '/');
+        $this->baseUrl = '/' . \trim($baseUrl, '/');
 
         $rc = new ReflectionClass($this->class);
         $rm = $rc->getMethod($this->method);
 
         $this->parameters = $rm->getParameters();
         for ($i = 0; $i < $ignoreParams; $i ++) {
-            array_shift($this->parameters);
+            \array_shift($this->parameters);
         }
 
         $this->required = $rm->getNumberOfRequiredParameters() - $ignoreParams;
 
         $this->variadic = empty($this->parameters)
             ? false
-            : end($this->parameters)->isVariadic();
+            : \end($this->parameters)->isVariadic();
 
         $this->optional = $rm->getNumberOfParameters()
             - $this->required
@@ -127,11 +127,11 @@ class Action
             return [$this->verb, $this->path, $this->argc];
         }
 
-        $parts = explode('\\', substr($this->class, $this->namespaceLen));
-        $last = array_pop($parts);
-        $impl = implode('', $parts);
+        $parts = \explode('\\', \substr($this->class, $this->namespaceLen));
+        $last = \array_pop($parts);
+        $impl = \implode('', $parts);
 
-        $this->verb = substr($last, 0, strlen($last) - strlen($impl) - $this->suffixLen);
+        $this->verb = \substr($last, 0, \strlen($last) - \strlen($impl) - $this->suffixLen);
 
         $this->path = $this->baseUrl;
         if ($this->baseUrl == '/' && ! empty($parts)) {
@@ -159,7 +159,7 @@ class Action
     ) : void {
         $prevClass = $currClass;
 
-        $part = array_shift($parts);
+        $part = \array_shift($parts);
         $this->path .= '/' . $actions->namespaceToSegment($part);
 
         $subNamespace .= '\\' . $part;
@@ -190,7 +190,7 @@ class Action
         string &$prevClass,
         array &$parts
     ) {
-        if (count($parts) !== 1) {
+        if (\count($parts) !== 1) {
             return false;
         }
 
@@ -205,7 +205,7 @@ class Action
             return false;
         }
 
-        $part = array_shift($parts);
+        $part = \array_shift($parts);
         $this->path .= '/' . $actions->namespaceToSegment($part);
         return true;
     }
@@ -231,7 +231,7 @@ class Action
             $this->dumpNamedPathPairs($pos, $rp, $namedPath, $pairs);
         }
 
-        return [$this->verb, strtr($namedPath, $pairs), $this->argc];
+        return [$this->verb, \strtr($namedPath, $pairs), $this->argc];
     }
 
     protected function dumpNamedPathPairs(

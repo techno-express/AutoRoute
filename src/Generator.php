@@ -24,9 +24,9 @@ class Generator
 
     public function generate(string $class, ...$dynamic) : string
     {
-        list ($verb, $path, $argc) = $this->actions->generate($class);
+        list($verb, $path, $argc) = $this->actions->generate($class);
 
-        $count = count($dynamic);
+        $count = \count($dynamic);
         if ($count < $argc) {
             $classMethod = $this->actions->getAction($class)->getClassMethod();
             throw new NotFound("Expected $argc required argument(s) for {$classMethod}, actually {$count}");
@@ -39,16 +39,16 @@ class Generator
         $i = 0;
         while (! empty($dynamic) && ! empty($parameters)) {
 
-            $rp = array_shift($parameters);
+            $rp = \array_shift($parameters);
 
             if ($rp->isVariadic()) {
                 while (! empty($dynamic)) {
-                    $path .= '/' . $this->filter->forSegment($rp, array_shift($dynamic));
+                    $path .= '/' . $this->filter->forSegment($rp, \array_shift($dynamic));
                 }
                 break;
             }
 
-            $segment = $this->filter->forSegment($rp, array_shift($dynamic));
+            $segment = $this->filter->forSegment($rp, \array_shift($dynamic));
             if ($rp->isOptional()) {
                 $path .= '/' . $segment;
             } else {
@@ -62,7 +62,7 @@ class Generator
             throw new NotFound("Too many generator segments for {$classMethod}");
         }
 
-        $path = strtr($path, $pairs);
-        return '/' . ltrim($path, '/');
+        $path = \strtr($path, $pairs);
+        return '/' . \ltrim($path, '/');
     }
 }

@@ -18,11 +18,11 @@ class Filter
     {
         $isBlank = ($value === null);
 
-        if (is_string($value)) {
-            $isBlank = trim($value) === '';
+        if (\is_string($value)) {
+            $isBlank = \trim($value) === '';
         }
 
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $isBlank = empty($value);
         }
 
@@ -37,7 +37,7 @@ class Filter
             $type = $type->getName();
         }
 
-        $method = 'to' . ucfirst($type);
+        $method = 'to' . \ucfirst($type);
         return $this->$method($rp, $value);
     }
 
@@ -47,8 +47,8 @@ class Filter
         $this->forAction($rp, $value);
 
         // only arrays cannot be cast to string
-        if (is_array($value)) {
-            return implode(',', $value);
+        if (\is_array($value)) {
+            return \implode(',', $value);
         }
 
         // return what was passed, cast as a string for the URL path segment
@@ -57,24 +57,24 @@ class Filter
 
     protected function toArray(ReflectionParameter $rp, /* mixed */ $value) : array
     {
-        if (is_array($value)) {
+        if (\is_array($value)) {
             return $value;
         }
 
-        return str_getcsv((string) $value);
+        return \str_getcsv((string) $value);
     }
 
     protected function toBool(ReflectionParameter $rp, /* mixed */ $value) : bool
     {
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return $value;
         }
 
-        if (in_array(strtolower($value), ['1', 't', 'true', 'y', 'yes'])) {
+        if (\in_array(\strtolower($value), ['1', 't', 'true', 'y', 'yes'])) {
             return true;
         }
 
-        if (in_array(strtolower($value), ['0', 'f', 'false', 'n', 'no'])) {
+        if (\in_array(\strtolower($value), ['0', 'f', 'false', 'n', 'no'])) {
             return false;
         }
 
@@ -83,11 +83,11 @@ class Filter
 
     protected function toInt(ReflectionParameter $rp, /* mixed */ $value) : int
     {
-        if (is_int($value)) {
+        if (\is_int($value)) {
             return $value;
         }
 
-        if (is_numeric($value) && (int) $value == $value) {
+        if (\is_numeric($value) && (int) $value == $value) {
             return (int) $value;
         }
 
@@ -96,11 +96,11 @@ class Filter
 
     protected function toFloat(ReflectionParameter $rp, /* mixed */ $value) : float
     {
-        if (is_float($value)) {
+        if (\is_float($value)) {
             return $value;
         }
 
-        if (is_numeric($value)) {
+        if (\is_numeric($value)) {
             return (float) $value;
         }
 
@@ -118,7 +118,7 @@ class Filter
         $name = $rp->getName();
         $class = $rp->getDeclaringClass()->getName();
         $method = $rp->getDeclaringFunction()->getName();
-        $value = var_export($value, true);
+        $value = \var_export($value, true);
         return new InvalidArgument("Expected {$type} argument for {$class}::{$method}() parameter {$pos} (\$$name), actually $value");
     }
 }

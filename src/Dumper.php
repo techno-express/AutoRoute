@@ -31,14 +31,14 @@ class Dumper
 
     protected function getFiles() : array
     {
-        return $this->glob_recursive($this->actions->getDirectory().\DIRECTORY_SEPARATOR. '*.php');
+        return $this->glob_recursive($this->actions->getDirectory() . \DIRECTORY_SEPARATOR. '*.php');
     }
 
     protected function glob_recursive($pattern, $flags = 0)
     {
         $files = \glob($pattern, $flags);
-        foreach (\glob(\dirname($pattern).\DIRECTORY_SEPARATOR.'*', \GLOB_ONLYDIR | \GLOB_NOSORT) as $dir) {
-            $files = \array_merge($files, $this->glob_recursive($dir .\DIRECTORY_SEPARATOR. \basename($pattern), $flags));
+        foreach (\glob(\dirname($pattern) . \DIRECTORY_SEPARATOR.'*', \GLOB_ONLYDIR | \GLOB_NOSORT) as $dir) {
+            $files = \array_merge($files, $this->glob_recursive($dir . \DIRECTORY_SEPARATOR. \basename($pattern), $flags));
         }
 
         return $files;
@@ -63,10 +63,10 @@ class Dumper
     {
         $urls = [];
         foreach ($classes as $class) {
-            list ($verb, $path, $argc) = $this->actions->dump($class);
+            list($verb, $path, $argc) = $this->actions->dump($class);
             $urls[$path][$verb] = $class;
         }
-        ksort($urls);
+        \ksort($urls);
         return $urls;
     }
 }

@@ -38,7 +38,7 @@ class Router
     {
         $originalPath = $path;
 
-        $this->verb = ucfirst(strtolower($verb));
+        $this->verb = \ucfirst(\strtolower($verb));
         $this->segments = $this->actions->getSegments($path);
         $this->subNamespace = '';
         $this->class = '';
@@ -49,9 +49,9 @@ class Router
             $this->match();
         } while (! empty($this->segments));
 
-        if (! class_exists($this->class)) {
-            $verb = strtoupper($verb);
-            $ns = rtrim($this->actions->getNamespace(), '\\') . $this->subNamespace;
+        if (! \class_exists($this->class)) {
+            $verb = \strtoupper($verb);
+            $ns = \rtrim($this->actions->getNamespace(), '\\') . $this->subNamespace;
             throw new MethodNotAllowed("$verb action not found in namespace $ns");
         }
 
@@ -72,7 +72,7 @@ class Router
         // does the subnamespace exist?
         if (! $this->actions->isSubNamespace($this->subNamespace)) {
             // no, so no need to keep matching
-            $ns = rtrim($this->actions->getNamespace(), '\\') . $this->subNamespace;
+            $ns = \rtrim($this->actions->getNamespace(), '\\') . $this->subNamespace;
             throw new InvalidNamespace("Not a known namespace: $ns");
         }
 
@@ -91,14 +91,14 @@ class Router
 
     protected function matchStaticTailSegment() : void
     {
-        if (count($this->segments) !== 1) {
+        if (\count($this->segments) !== 1) {
             return;
         }
 
         $segment = $this->actions->segmentToNamespace($this->segments[0]);
         $temp = $this->actions->actionExists($this->verb, $this->subNamespace, $segment);
         if ($temp !== null) {
-            array_shift($this->segments);
+            \array_shift($this->segments);
             $this->subNamespace .= '\\' . $segment;
             $this->class = $temp;
         }
@@ -111,15 +111,15 @@ class Router
 
         // consume one segment per required param, minus any dynamic segments
         // we have already captured
-        $required = $this->action->getRequired() - count($this->dynamic);
+        $required = $this->action->getRequired() - \count($this->dynamic);
 
-        if (count($this->segments) < $required) {
+        if (\count($this->segments) < $required) {
             $method = $this->actions->getMethod();
             throw new NotFound("Not enough segments for {$this->class}::{$method}().");
         }
 
         while ($required > 0) {
-            $this->dynamic[] = array_shift($this->segments);
+            $this->dynamic[] = \array_shift($this->segments);
             $required --;
         }
     }
@@ -143,13 +143,13 @@ class Router
         // is terminated. consume optional params ...
         $optional = $this->action->getOptional();
         while ($optional > 0 && ! empty($this->segments)) {
-            $this->dynamic[] = array_shift($this->segments);
+            $this->dynamic[] = \array_shift($this->segments);
             $optional --;
         }
 
         // ... and variadic params.
         while ($this->action->hasVariadic() && ! empty($this->segments)) {
-            $this->dynamic[] = array_shift($this->segments);
+            $this->dynamic[] = \array_shift($this->segments);
         }
 
         // routing is terminated; there cannot be any segments remaining.
@@ -171,13 +171,13 @@ class Router
 
             // non-variadic values
             if (! $rp->isVariadic()) {
-                $output[] = $filter->forAction($rp, array_shift($input));
+                $output[] = $filter->forAction($rp, \array_shift($input));
                 continue;
             }
 
             // all remaining values as variadic
             while (! empty($input)) {
-                $value = array_shift($input);
+                $value = \array_shift($input);
                 $output[] = $filter->forAction($rp, $value);
             }
         }
