@@ -1,7 +1,7 @@
 {
-    "name": "pmjones/auto-route",
+    "name": "forked/auto-route",
     "type": "library",
-    "description": "Automatically routes HTTP request to action classes.",
+    "description": "Automatically routes HTTP request to action classes. A fork of pmjones/auto-route.",
     "keywords": [ "route", "router", "routing", "action", "adr" ],
     "homepage": "http://github.com/pmjones/auto-route",
     "license": "MIT",
