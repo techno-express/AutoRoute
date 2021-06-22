@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * This file is part of AutoRoute for PHP.
@@ -6,11 +7,14 @@
  * @license http://opensource.org/licenses/MIT MIT
  *
  */
+
 declare(strict_types=1);
 
 namespace AutoRoute;
 
 use ReflectionClass;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class Dumper
 {
@@ -21,7 +25,7 @@ class Dumper
         $this->actions = $actions;
     }
 
-    public function dumpRoutes() : array
+    public function dumpRoutes(): array
     {
         $files = $this->getFiles();
         $classes = $this->getClassesFromFiles($files);
@@ -29,22 +33,28 @@ class Dumper
         return $urls;
     }
 
-    protected function getFiles() : array
+    protected function getFiles(): array
     {
-        return $this->glob_recursive($this->actions->getDirectory() . \DIRECTORY_SEPARATOR. '*.php');
-    }
+        $files = [];
 
-    protected function glob_recursive($pattern, $flags = 0)
-    {
-        $files = \glob($pattern, $flags);
-        foreach (\glob(\dirname($pattern) . \DIRECTORY_SEPARATOR.'*', \GLOB_ONLYDIR | \GLOB_NOSORT) as $dir) {
-            $files = \array_merge($files, $this->glob_recursive($dir . \DIRECTORY_SEPARATOR. \basename($pattern), $flags));
+        $items = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+                $this->actions->getDirectory()
+            )
+        );
+
+        foreach ($items as $item) {
+            $file = $item->getPathname();
+
+            if (substr($file, -4) == '.php') {
+                $files[] = $file;
+            }
         }
 
         return $files;
     }
 
-    protected function getClassesFromFiles(array $files) : array
+    protected function getClassesFromFiles(array $files): array
     {
         $classes = [];
 
@@ -59,7 +69,7 @@ class Dumper
         return $classes;
     }
 
-    protected function getUrlsFromClasses(array $classes) : array
+    protected function getUrlsFromClasses(array $classes): array
     {
         $urls = [];
         foreach ($classes as $class) {
