@@ -38,6 +38,7 @@ cases -- even when FastRoute is using cached route definitions.
 - [Generating Route Paths](#generating-route-paths)
 - [Alternative Configurations](#alternative-configurations)
 - [Dumping All Routes](#dumping-all-routes)
+- [Creating Classes From Routes](#creating-classes-from-routes)
 - [Questions and Recipes](#questions-and-recipes)
 
 
@@ -100,7 +101,7 @@ class GetPhoto
 ... recognizing that `1` should be the value of `$photoId`.
 
 AutoRoute supports static "tail" parameters on the URL. If the URL ends in a
-path segment that matches the underscore-separated tail portion of a class name,
+path segment that matches the tail portion of a class name,
 and the action class method has the same number and type of parameters as its
 parent or grandparent class, it will route to that class name. For example,
 given an action class with method parameters such as this ...
@@ -139,7 +140,7 @@ further:
 
 2. Followed by the concatenated names of preceding subnamespaces;
 
-4. Ending in `.php`.
+3. Ending in `.php`.
 
 Thus, given a base namespace of `App\Http`, the class `App\Http\Photo\PostPhoto`
 will be the action for `POST /photo[/*]`.
@@ -462,6 +463,63 @@ You can specify alternative configurations with these command line options:
 - `--method=` to set the action class method name
 - `--suffix=` to note a standard action class suffix
 - `--word-separator=` to specify an alternative word separator
+
+
+## Creating Classes From Routes
+
+_AutoRoute_ provides minimalist support for creating class files based on a
+route verb and path, using a template.
+
+To do so, invoke `autoroute-create.php` with the base namespace, the directory
+for that namespace, the HTTP verb, and the URL path with parameter token
+placeholders.
+
+For example, the following command ...
+
+```
+$ php bin/autoroute-create.php App\\Http ./src/Http GET /photo/{photoId}
+```
+
+... will create this class file at `./src/Http/Photo/GetPhoto.php`:
+
+```php
+namespace App\Http\Photo;
+
+class GetPhoto
+{
+    public function __invoke($photoId)
+    {
+    }
+}
+```
+
+The command will not overwrite existing files.
+
+You can specify alternative configurations with these command line options:
+
+- `--method=` to set the action class method name
+- `--suffix=` to note a standard action class suffix
+- `--template=` to specify the path to a custom template
+- `--word-separator=` to specify an alternative word separator
+
+The default class template file is `resources/templates/action.tpl`. If you
+decide to write a custom template of your own, the available string-replacement
+placeholders are:
+
+- `{NAMESPACE}`
+- `{CLASS}`
+- `{METHOD}`
+- `{PARAMETERS}`
+
+These names should be self-explanatory.
+
+> **Note:**
+>
+> Even with a custom template, you will almost certainly need to edit the new
+> file to add a constructor, typehints, default values, and so on. The file
+> creation functionality is necessarily minimalist, and cannot account for all
+> possible variability in your specific situation.
+
 
 ## Questions and Recipes
 

@@ -1,19 +1,30 @@
 <?php
 use AutoRoute\AutoRoute;
 
-$autoload = require dirname(__DIR__) . '/vendor/autoload.php';
+$autoload = '';
+
+$autoloadFiles = [
+    dirname(__DIR__) . '/vendor/autoload.php',
+    dirname(dirname(dirname(__DIR__))) . '/autoload.php'
+];
+foreach ($autoloadFiles as $autoloadFile) {
+    if (file_exists($autoloadFile)) {
+        $autoload = require $autoloadFile;
+        break;
+    }
+}
 
 $options = getopt('', ['base-url:', 'ignore-params:', 'method:', 'suffix:', 'word-separator:'], $optind);
 
 $namespace = $argv[$optind + 0] ?? null;
 if ($namespace === null) {
-    echo "Please pass a PHP namespace as the first argument.";
+    echo "Please pass a PHP namespace as the first argument." . PHP_EOL;
     exit(1);
 }
 
 $directory = realpath($argv[$optind + 1] ?? null);
 if ($directory === false) {
-    echo "Please pass the PHP namespace directory path as the second argument.";
+    echo "Please pass the PHP namespace directory path as the second argument." . PHP_EOL;
     exit(1);
 }
 
