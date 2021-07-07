@@ -128,6 +128,12 @@ Finally, a request for the root URL ...
 
 ... auto-routes to the class `App\Http\Get`.
 
+> **Tip:**
+>
+> Any HEAD request will auto-route to an explicit `App\Http\...\Head*` class,
+> if one exists. If an explicit `Head` class does not exist, the request will
+> implicitly be auto-routed to the matching `App\Http\...\Get*` class, if one
+> exists.
 
 ## How It Works
 
@@ -148,6 +154,10 @@ will be the action for `POST /photo[/*]`.
 Likewise, `App\Http\Photos\GetPhotos` will be the action class for `GET /photos[/*]`.
 
 And `App\Http\Photo\Edit\GetPhotoEdit` will be the action class for `GET /photo[/*]/edit`.
+
+An explicit `App\Http\Photos\HeadPhotos` will be the action class for
+`HEAD /photos[/*]`. If the `HeadPhotos` class does not exist, the action class
+is inferred to be `App\Http\Photos\HeadPhotos` instead.
 
 Finally, at the URL root path, `App\Http\Get` will be the action class for `GET /`.
 
@@ -389,9 +399,13 @@ _AutoRoute_ will see that parameter and incorrectly interpret it as a dynamic
 segment; for example:
 
 ```php
+namespace App\Http\Photo;
+
+use SapiRequest;
+
 class PatchPhoto
 {
-    public function __invoke(\ServerRequest $request, int $id)
+    public function __invoke(SapiRequest $request, int $id)
     {
         // ...
     }
@@ -631,13 +645,15 @@ For example, in the action:
 ```php
 namespace App\Http\Photos\Archive;
 
+use SapiResponse;
+
 class GetPhotosArchive
 {
     public function __invoke(
         int $year = null,
         int $month = null,
         int $day = null
-    ) : \ServerResponse
+    ) : SapiResponse
     {
         $payload = $this->domain->fetchAllBySpan($year, $month, $day);
         return $this->responder->response($payload);
@@ -695,10 +711,12 @@ For example, in the action:
 ```php
 namespace App\Http\Foos;
 
+use SapiRequest;
+
 class GetFoos
 {
     public function __construct(
-        \ServerRequest $request,
+        SapiRequest $request,
         FooService $fooService
     ) {
         $this->request = $request;

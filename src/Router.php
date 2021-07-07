@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * This file is part of AutoRoute for PHP.
@@ -6,6 +7,7 @@
  * @license http://opensource.org/licenses/MIT MIT
  *
  */
+
 declare(strict_types=1);
 
 namespace AutoRoute;
@@ -34,7 +36,7 @@ class Router
         $this->filter = new Filter();
     }
 
-    public function route(string $verb, string $path) : Route
+    public function route(string $verb, string $path): Route
     {
         $originalPath = $path;
 
@@ -47,9 +49,9 @@ class Router
 
         do {
             $this->match();
-        } while (! empty($this->segments));
+        } while (!empty($this->segments));
 
-        if (! \class_exists($this->class)) {
+        if (!\class_exists($this->class)) {
             $verb = \strtoupper($verb);
             $ns = \rtrim($this->actions->getNamespace(), '\\') . $this->subNamespace;
             throw new MethodNotAllowed("$verb action not found in namespace $ns");
@@ -60,17 +62,17 @@ class Router
         return new Route($action->getClass(), $action->getMethod(), $params);
     }
 
-    protected function match() : void
+    protected function match(): void
     {
         // consume next segment as a subnamespace
         $segment = '';
-        if (! empty($this->segments)) {
+        if (!empty($this->segments)) {
             $segment = $this->actions->segmentToNamespace(array_shift($this->segments));
             $this->subNamespace .= '\\' . $segment;
         }
 
         // does the subnamespace exist?
-        if (! $this->actions->isSubNamespace($this->subNamespace)) {
+        if (!$this->actions->isSubNamespace($this->subNamespace)) {
             // no, so no need to keep matching
             $ns = \rtrim($this->actions->getNamespace(), '\\') . $this->subNamespace;
             throw new InvalidNamespace("Not a known namespace: $ns");
@@ -89,7 +91,7 @@ class Router
         $this->matchOptionalSegments();
     }
 
-    protected function matchStaticTailSegment() : void
+    protected function matchStaticTailSegment(): void
     {
         if (\count($this->segments) !== 1) {
             return;
@@ -120,13 +122,13 @@ class Router
 
         while ($required > 0) {
             $this->dynamic[] = \array_shift($this->segments);
-            $required --;
+            $required--;
         }
     }
 
     protected function matchOptionalSegments()
     {
-        if (! $this->action->hasOptionals() || empty($this->segments)) {
+        if (!$this->action->hasOptionals() || empty($this->segments)) {
             // no optionals, or no segments to fulfill them
             return;
         }
@@ -142,18 +144,18 @@ class Router
         // the segment is not a subnamespace; further routing to subnamespaces
         // is terminated. consume optional params ...
         $optional = $this->action->getOptional();
-        while ($optional > 0 && ! empty($this->segments)) {
+        while ($optional > 0 && !empty($this->segments)) {
             $this->dynamic[] = \array_shift($this->segments);
-            $optional --;
+            $optional--;
         }
 
         // ... and variadic params.
-        while ($this->action->hasVariadic() && ! empty($this->segments)) {
+        while ($this->action->hasVariadic() && !empty($this->segments)) {
             $this->dynamic[] = \array_shift($this->segments);
         }
 
         // routing is terminated; there cannot be any segments remaining.
-        if (! empty($this->segments)) {
+        if (!empty($this->segments)) {
             $class = $this->action->getClass();
             $method = $this->action->getMethod();
             throw new NotFound("Too many router segments for {$class}::{$method}()");
@@ -164,21 +166,20 @@ class Router
     {
         $input = $this->dynamic;
         $output = [];
-        $filter = new Filter();
 
-        while (! empty($input)) {
-            $rp = array_shift($parameters);
+        while (!empty($input)) {
+            $rp = \array_shift($parameters);
 
             // non-variadic values
-            if (! $rp->isVariadic()) {
-                $output[] = $filter->forAction($rp, \array_shift($input));
+            if (!$rp->isVariadic()) {
+                $output[] = $this->filter->forAction($rp, \array_shift($input));
                 continue;
             }
 
             // all remaining values as variadic
-            while (! empty($input)) {
+            while (!empty($input)) {
                 $value = \array_shift($input);
-                $output[] = $filter->forAction($rp, $value);
+                $output[] = $this->filter->forAction($rp, $value);
             }
         }
 
